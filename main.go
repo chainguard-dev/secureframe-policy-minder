@@ -18,6 +18,10 @@ import (
 	"github.com/slack-go/slack"
 )
 
+const (
+	gracePeriodDays int = 10
+)
+
 var (
 	greetings = []string{
 		"Greetings and salutations",
@@ -54,6 +58,21 @@ type MessageContext struct {
 	Needs               []string
 	InterpretedNeeds    []string
 	HelpChannel         string
+}
+
+func gracePeriod(t time.Time) time.Time {
+	return t.AddDate(0, 0, gracePeriodDays)
+}
+
+func trainingComplete(p secureframe.Person) bool {
+	switch {
+	case p.OnboardingTasksDeadlineExceeded:
+		return false
+	case time.Now().After(p.OnboardingTasksDueDate):
+		return false
+	default:
+		return true
+	}
 }
 
 func messageText(m MessageContext) (string, error) {
@@ -186,6 +205,13 @@ func main() {
 		if !p.SecurityTrainingCompleted {
 			needs = append(needs, `🏋️‍♀️ Take Cybersecurity training at {{.SecurityTrainingURL}}`)
 			needs = append(needs, `⬆️ Upload proof of completion to https://app.secureframe.com/onboard/employee/training (PDF or screenshot)`)
+		}
+
+		// Give the user a grace period if onboarding/training is not complete
+		// Use the onboarding task due date as the basis for the grace period
+		// otherwise we'd just keep adding 10 days to whatever the current date is when the Workflow is run
+		if !trainingComplete(p) {
+			needs = append(needs, fmt.Sprintf(`📆 Upload proof of completion by %s`, gracePeriod(p.OnboardingTasksDueDate)))
 		}
 
 		if len(needs) > 0 {

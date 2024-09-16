@@ -77,6 +77,8 @@ type Person struct {
 	InvitedAt                           time.Time `json:"invitedAt"`
 	ManagedComputer                     bool      `json:"managedComputer"`
 	Name                                string    `json:"name"`
+	OnboardingTasksDeadlineExceeded     bool      `json:"onboardingTasksDeadlineExceeded"`
+	OnboardingTasksDueDate              time.Time `json:"onboardingTasksDueDate"`
 	PciSecureCodeTrainingCompleted      bool      `json:"pciSecureCodeTrainingCompleted"`
 	PciSecureCodeTrainingCompletedAt    any       `json:"pciSecureCodeTrainingCompletedAt"`
 	PciTrainingCompleted                bool      `json:"pciTrainingCompleted"`
