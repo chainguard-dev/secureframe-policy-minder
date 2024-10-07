@@ -153,6 +153,9 @@ func main() {
 	}
 	log.Printf("PPL: -- %+v -- ", ppl)
 
+	// Provide a date string for three days in the future
+	threeDays := time.Now().AddDate(0, 0, 3).Format(time.RFC850)
+
 	for _, info := range ppl {
 		// Instructions to be populated based on the user's onboarding status
 		needs := []string{}
@@ -163,9 +166,11 @@ func main() {
 			needs = append(needs, `✅ Accept our latest policies at https://app.secureframe.com/onboard/employee/policies`)
 			needs = append(needs, `🏋️‍♀️ Take Cybersecurity training at {{.SecurityTrainingURL}}`)
 			needs = append(needs, `⬆️ Upload proof of completion to https://app.secureframe.com/onboard/employee/training (PDF or screenshot)`)
+			needs = append(needs, fmt.Sprintf(`📆 Accept policies and upload proof within 72 hours of receiving this notification (by %s)`, threeDays))
 		case "security_training":
 			needs = append(needs, `🏋️‍♀️ Take Cybersecurity training at {{.SecurityTrainingURL}}`)
 			needs = append(needs, `⬆️ Upload proof of completion to https://app.secureframe.com/onboard/employee/training (PDF or screenshot)`)
+			needs = append(needs, fmt.Sprintf(`📆 Upload proof within 72 hours of receiving this notification (by %s)`, threeDays))
 		default:
 			continue
 		}
